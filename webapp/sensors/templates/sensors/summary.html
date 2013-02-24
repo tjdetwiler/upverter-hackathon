@@ -1,0 +1,43 @@
+{% extends "sensors/base.html" %}
+
+{% block title %}
+  Test Page
+{% endblock %}
+
+{% block content %}
+{% for packet in packets %}
+    <h3>Sensor {{ packet.host }}</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <td>Pin #</td>
+          <td>I/O</td>
+          <td>State</td>
+        </tr>
+      </thead>
+      <tbody>
+      {% for pinno, state in packet.gpio.input %}
+        <tr>
+          <td>{{pinno}}</td>
+          <td>Input</td>
+          <td>{{state}}</td>
+        </tr>
+      {% endfor %}
+      {% for pinno, state in packet.gpio.output %}
+        <tr>
+          <td>{{pinno}}</td>
+          <td>Output</td>
+          <td>{{state}}</td>
+        </tr>
+      {% endfor %}
+      {% for pinno in packet.gpio.unused %}
+        <tr>
+          <td>{{pinno}}</td>
+          <td>Unused</td>
+          <td>N/A</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+{% endfor %}
+{% endblock %}

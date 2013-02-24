@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>{% block title %} Wireless Monitor {% endblock %}</title>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(worker);
+
+      function drawNewChart(new_data) {
+   
+
+        sensors = new_data.length;
+
+        chart_data = ['Time']
+
+        for(i=0;i<sensors;i++){
+          chart_data.push(new_data[i][0]["host"]);
+        }
+
+        chart_data = [chart_data];
+
+        min_length = 10000;
+        for(i=0;i<sensors;i++){
+          if(new_data[i].length < min_length){
+            min_length = new_data[i].length;
+          }
+        }    
+         
+         
+        for(i=0;i<min_length;i++){
+             x=[i];
+          for(j=0;j<sensors;j++){
+             x.push(new_data[j][i]['sensors']['Humidity']);
+           }
+           chart_data.push(x);
+        }
+
+        var data = google.visualization.arrayToDataTable(chart_data);
+
+        var options = {
+          title: 'Sensor Humidity Monitor'
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div_1'));
+        chart.draw(data, options);
+
+
+
+
+
+
+        sensors = new_data.length;
+
+        chart_data = ['Time']
+
+        for(i=0;i<sensors;i++){
+          chart_data.push(new_data[i][0]["host"]);
+        }
+
+        chart_data = [chart_data];
+
+        min_length = 10000;
+        for(i=0;i<sensors;i++){
+          if(new_data[i].length < min_length){
+            min_length = new_data[i].length;
+          }
+        }    
+         
+         
+        for(i=0;i<min_length;i++){
+             x=[i];
+          for(j=0;j<sensors;j++){
+             x.push(new_data[j][i]['sensors']['Temperature']);
+           }
+           chart_data.push(x);
+        }
+
+        var data = google.visualization.arrayToDataTable(chart_data);
+
+        var options = {
+          title: 'Sensor Temperature Monitor'
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div_2'));
+        chart.draw(data, options);
+
+
+
+
+
+
+      }
+
+
+
+
+
+
+
+
+
+
+
+      // Wrap this function in a closure so we don't pollute the namespace
+      function worker() {
+        console.log('drawing...');
+	$.ajax({
+	  url: 'http://hcf.io:8000/sensors/update', 
+	  success: function(data) {
+ 
+             drawNewChart(data)
+
+
+	  },
+          failure: function(){console.log('whoops\n');},
+	  complete: function() {
+	    // Schedule the next request when the current one's complete
+	    setTimeout(worker, 1500);
+	  }
+	});
+      };
+
+
+
+
+
+    </script>
+
+</head>
+
+<body>
+
+
+
+
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="#">Household Sensors</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"><a href="#"> welcome</a></li>
+              <!-- <li><a href="#about">About</a></li> -->
+              <!-- <li><a href="#contact">Contact</a></li> -->
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+    </div> <!-- /container -->
+
+
+
+
+
+    <div id="chart_div_1" style="height: 600px;"></div>
+    
+    <div id="chart_div_2" style="height: 600px;"></div>
+
+
+
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+</html>
